@@ -3,38 +3,64 @@ import java.util.Scanner;
 
 public class Main {
 
-	static Hashtable<String,String> dic = new Hashtable<>();
+	static Node root=new Node();
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		Hashtable<String,String> dic = new Hashtable<>();
+		
 		Scanner sc =new Scanner(System.in);
 		int n = sc.nextInt();
 		for (int i=0;i<n;i++) {
 			String value = sc.next();
-			String key = sc.next();
-			dic.put(key,value);
+			String path = sc.next();
+			root.add(path,value);
 		}
-		String str = sc.next();
-		
-		System.out.println(decoding(str));
-	}
-
-	private static String decoding(String str) {
-		// TODO Auto-generated method stub
-		if (str.isBlank()) return "";
-		String key=findFirstKey(str);
-		return dic.get(key)+decoding(str.substring(key.length()));
-	}
-
-	private static String findFirstKey(String str) {
-		// TODO Auto-generated method stub
-		String key="";
+		String str = sc.next();		
+		Node currentNode = root;
 		for (int i=0;i<str.length();i++) {
-			key+=str.charAt(i);
-			if (dic.containsKey(key))
-				return key;
+			if (currentNode.value!=null) {
+				System.out.print(currentNode.value);
+				currentNode=root;
+			} else {
+				int index = str.charAt(i)-'0'; //'7'-'0' == 7
+				currentNode = currentNode.children[index];
+			}
 		}
-		return null;
 	}
-
+}
+class Node {
+	Character value = null;
+	Node[] children = new Node[2];
+	
+	public Node() {
+		children[0]=null;
+		children[1]=null;
+	}
+	public void add(String path, String val) {
+		// TODO Auto-generated method stub
+		Node currentNode = this;
+		for (int i=0;i<path.length();i++) {
+			int index = path.charAt(i)-'0';
+			if (currentNode.children[index]!=null) {
+				currentNode = currentNode.children[index];
+			} else {
+				currentNode.children[index]=new Node();
+				currentNode = currentNode.children[index];
+			}
+		}
+		currentNode.value = val.charAt(0);
+	}
+	
+	public void addRecursive(String path, String val) {
+		if (path.isEmpty()) {
+			this.value = val.charAt(0);
+			return;
+		}
+		
+		int idx = path.charAt(0)-'0';
+		if (this.children[idx]==null) {
+			this.children[idx] = new Node();
+		}
+		this.children[idx].add(path.substring(1), val);
+		
+	}
 }
